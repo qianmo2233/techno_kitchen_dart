@@ -1,0 +1,21 @@
+name: techno_kitchen_dart
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.8.0-171.0.dev
+
+# Add regular dependencies here.
+dependencies:
+  encrypt: ^5.0.3
+  archive: ^4.0.7
+  crypto: ^3.0.6
+  http: ^1.4.0
+  intl: ^0.20.2
+  timezone: ^0.10.1
+  # path: ^1.8.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.24.0
