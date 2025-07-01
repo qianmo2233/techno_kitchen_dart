@@ -18,7 +18,7 @@ class AESPKCS7 {
           encrypt.AES(
             encrypt.Key.fromUtf8(keyStr),
             mode: encrypt.AESMode.cbc,
-            padding: null, // Padding is handled manually.
+            padding: null, // Padding is handled manually.  
           ),
         ),
         iv = encrypt.IV.fromUtf8(ivStr);
@@ -26,6 +26,12 @@ class AESPKCS7 {
   /// Encrypts a UTF-8 [content] string and returns the raw encrypted bytes.
   Uint8List encryptText(String content) {
     final padded = _pkcs7Pad(Uint8List.fromList(utf8.encode(content)));
+    return encrypter.encryptBytes(padded, iv: iv).bytes;
+  }
+
+  /// Encrypts binary [content] (e.g. compressed data) and returns the encrypted bytes.
+  Uint8List encryptBytes(Uint8List content) {
+    final padded = _pkcs7Pad(content);
     return encrypter.encryptBytes(padded, iv: iv).bytes;
   }
 

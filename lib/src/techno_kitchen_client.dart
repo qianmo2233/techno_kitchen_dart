@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
@@ -15,10 +16,10 @@ class TechnoKitchenClient {
   // --- Configuration Parameters ---
 
   /// AES encryption key (must match the server's key).
-  String aesKey = "n7bx6:@Fg_:2;5E89Phy7AyIcpxEQ:R@";
+  String aesKey = "a>32bVP7v<63BVLkY[xM>daZ1s9MBP<R";
 
   /// AES initialization vector (must be 16 bytes).
-  String aesIv = ";;KjR1C3hgB1ovXa";
+  String aesIv = "d6xHIKq]1J]Dt^ue";
 
   /// Obfuscation parameter used in API hash calculation.
   String obfuscateParam = "B44df8yT";
@@ -36,7 +37,7 @@ class TechnoKitchenClient {
   String chimeEndpoint = "http://ai.sys-allnet.cn/wc_aime/api/get_data";
 
   /// Endpoint for encrypted and compressed title server requests.
-  String titleEndpoint = "https://maimai-gm.wahlap.com:42081/Maimai2Servlet/";
+  String titleEndpoint = "https://maimai-gm.wahlap.com:42081/Maimai2Servlet/mE2s3Jhd/";
 
   /// Constructs a [TechnoKitchenClient] with custom parameters.
   TechnoKitchenClient(
@@ -119,17 +120,20 @@ class TechnoKitchenClient {
   ///
   /// Returns the decrypted string response from the server.
   Future<String> sdgbApi(String data, String useApi, int userId) async {
-    final aes = AESPKCS7(aesKey, aesIv);
+  final aes = AESPKCS7(aesKey, aesIv);
 
-    // Encrypt and compress the payload
-    final encryptedData = aes.encryptText(data);
-    final compressedData = ZLibEncoder().encode(encryptedData);
+  // Encrypt and compress the payload
+  final compressedData = ZLibEncoder().encode(utf8.encode(data));
+  final encryptedData = aes.encryptBytes(Uint8List.fromList(compressedData));
 
-    // Generate obfuscated API hash
-    final hashApi = getHashApi(useApi, "MaimaiChn", obfuscateParam);
+  // Generate obfuscated API hash
+  final hashApi = getHashApi(useApi, "MaimaiChn", obfuscateParam);
 
+  // Send request to title server
+  http.Response response;
+  try {
     // Send request to title server
-    final response = await http.post(
+    response = await http.post(
       Uri.parse(titleEndpoint + hashApi),
       headers: {
         "User-Agent": "$hashApi#$userId",
@@ -140,22 +144,21 @@ class TechnoKitchenClient {
         "Content-Encoding": "deflate",
         "Expect": "100-continue",
       },
-      body: compressedData,
+      body: encryptedData,
     );
-
-    if (response.statusCode != 200) {
-      throw Exception("Response error: ${response.statusCode}");
-    }
-
-    // Decompress and decrypt server response
-    Uint8List responseBytes = response.bodyBytes;
-    try {
-      responseBytes = ZLibDecoder().decodeBytes(response.bodyBytes);
-    } catch (_) {
-      // Response may already be uncompressed
-    }
-
-    final decrypted = aes.pkcs7Unpad(aes.decryptBytes(responseBytes));
-    return utf8.decode(decrypted);
+  } on SocketException catch (e) {
+    throw Exception("Network error: Unable to connect to server.\n$e");
+  } on Exception catch (e) {
+    throw Exception("Unexpected error: $e");
   }
+
+  if (response.statusCode != 200) {
+    throw Exception("Response error: ${response.statusCode}\n${response.body}");
+  }
+
+  // Decrypt and decompress server response
+  final decrypted = aes.decryptBytes(response.bodyBytes);
+  final decompressed = ZLibDecoder().decodeBytes(decrypted);
+  return utf8.decode(decompressed);
+}
 }
