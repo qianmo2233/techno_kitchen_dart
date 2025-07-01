@@ -1,6 +1,6 @@
 name: techno_kitchen_dart
 description: A library for interacting with the SDGB API.
-version: 1.0.0
+version: 1.0.0-dev.1
 repository: https://github.com/qianmo2233/techno_kitchen_dart
 example:
   script: example/techno_kitchen_dart_example.dart
