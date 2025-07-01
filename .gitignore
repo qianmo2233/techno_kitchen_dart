@@ -7,3 +7,8 @@
 pubspec.lock
 
 test/qr_code.txt
+
+doc/
+
+# Mac
+.DS_Store
