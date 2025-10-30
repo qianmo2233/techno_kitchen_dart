@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:dotenv/dotenv.dart';
 import 'package:techno_kitchen_dart/techno_kitchen_dart.dart';
 import 'package:timezone/data/latest_10y.dart' as tzdata;
 
 /// Example usage of Techno Kitchen Dart API client.
 ///
 /// ⚠️ DO NOT USE YOUR MAIN ACCOUNT.
-/// 
+///
 /// The server-side API may change at any time,
 /// which could make this library temporarily incompatible with newer versions.
 /// However, you can still use it by customizing the parameters of
@@ -22,7 +23,7 @@ void main() async {
   tzdata.initializeTimeZones();
 
   // Create an instance of the main API handler
-  final technoKitchen = TechnoKitchen();
+  final technoKitchen = TechnoKitchen.fromEnv(DotEnv()..load());
   final client = technoKitchen.client;
 
   // === Step 1: Get UserId by QR Code ===

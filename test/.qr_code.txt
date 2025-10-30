@@ -1,1 +1,0 @@
-Rename the file to `qr_code.txt` and replace this prompt text with QR Code.

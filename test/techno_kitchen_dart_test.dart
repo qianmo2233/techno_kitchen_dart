@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:dotenv/dotenv.dart';
 import 'package:techno_kitchen_dart/techno_kitchen_dart.dart';
 import 'package:test/test.dart';
 import 'package:timezone/data/latest_10y.dart' as tzdata;
@@ -17,11 +17,13 @@ void main() {
   group('SDGB API Test', () {
     late TechnoKitchenClient client;
     late TechnoKitchen technoKitchen;
+    late DotEnv env;
     late final String qrCode;
     late final int userId;
 
     setUp(() {
-      technoKitchen = TechnoKitchen();
+      env = DotEnv()..load();
+      technoKitchen = TechnoKitchen.fromEnv(env);
       client = technoKitchen.client;
       tzdata.initializeTimeZones();
 
@@ -34,15 +36,9 @@ void main() {
 
     test('QR Code Test', () async {
       if (qrCode.isEmpty) {
-        final qrFile = File('test/qr_code.txt');
-        expect(
-          await qrFile.exists(),
-          isTrue,
-          reason: 'File qr_code.txt not found',
-        );
-
-        qrCode = (await qrFile.readAsString()).trim();
-        expect(qrCode.isNotEmpty, isTrue, reason: 'qrCode is empty');
+        final qrCode = env['QR_CODE'];
+        expect(qrCode, isNotNull, reason: 'QR_CODE undefined');
+        expect(qrCode!.isNotEmpty, isTrue, reason: 'qrCode is empty');
       } else {
         print('Using provided QR code: $qrCode');
       }
@@ -70,7 +66,7 @@ void main() {
         reason: 'userId should be set after QR code test or manually',
       );
 
-      final previewResult = await TechnoKitchen().preview(userId);
+      final previewResult = await technoKitchen.preview(userId);
 
       print(previewResult);
 

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:dotenv/dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:techno_kitchen_dart/src/config.dart';
+import 'package:techno_kitchen_dart/src/request_adapter.dart';
 import 'package:techno_kitchen_dart/techno_kitchen_dart.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
@@ -11,8 +13,15 @@ class TechnoKitchen {
   late final MusicData _musicData;
   late final ArcadeInfo _arcadeInfo;
 
-  TechnoKitchen() {
-    _client = TechnoKitchenClient.defaultValues();
+  TechnoKitchen(RequestAdapter requestAdapter) {
+    _client = TechnoKitchenClient(requestAdapter);
+    _musicData = MusicData.defaultData();
+    _arcadeInfo = ArcadeInfo.defaultInfo();
+  }
+
+  TechnoKitchen.fromEnv(DotEnv env) {
+    RequestAdapter requestAdapter = RequestAdapter.fromEnv(env);
+    _client = TechnoKitchenClient(requestAdapter);
     _musicData = MusicData.defaultData();
     _arcadeInfo = ArcadeInfo.defaultInfo();
   }
