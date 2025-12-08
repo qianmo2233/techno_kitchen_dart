@@ -25,6 +25,7 @@ void main() {
       env = DotEnv()..load();
       technoKitchen = TechnoKitchen.fromEnv(env);
       client = technoKitchen.client;
+      print(technoKitchen.requestAdapter.toString());
       tzdata.initializeTimeZones();
 
       // Leave qrCode empty will be read from file
@@ -75,6 +76,35 @@ void main() {
         isTrue,
         reason: 'Preview result should not be empty',
       );
+    });
+
+    test("Get User Data", () async {
+      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      expect(
+        userId,
+        isNot(equals(0)),
+        reason: 'userId should be set after QR code test or manually',
+      );
+
+      final loginResult = await technoKitchen.login(userId, timestamp);
+      print(loginResult);
+      final userDataResult = await technoKitchen.userdata(userId);
+      print(userDataResult);
+      final logoutResult = await technoKitchen.logout(userId, timestamp);
+      print(logoutResult);
+    });
+
+    test("get User Music", () async {
+      expect(
+        userId,
+        isNot(equals(0)),
+        reason: 'userId should be set after QR code test or manually',
+      );
+      final userMusicResult = await technoKitchen.getUserMusic(
+        userId,
+        maxCount: 50,
+      );
+      print(userMusicResult);
     });
   });
 }

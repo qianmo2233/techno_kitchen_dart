@@ -39,6 +39,7 @@ class TechnoKitchen {
   get client => _client;
   get musicData => _musicData;
   get arcadeInfo => _arcadeInfo;
+  get requestAdapter => _client.requestAdapter;
 
   Future<String> getUserId(String qrCode) async {
     return (await _client.qrApi(qrCode))['userID'] as String;
@@ -103,6 +104,26 @@ class TechnoKitchen {
     final result = await _client.sdgbApi(
       jsonEncode(data),
       "GetUserDataApi",
+      userId,
+    );
+
+    return result;
+  }
+
+  Future<String> getUserMusic(
+    int userId, {
+    int nextIndex = 0,
+    int maxCount = 10000,
+  }) async {
+    final data = {
+      "userId": userId,
+      "nextIndex": nextIndex,
+      "maxCount": maxCount,
+    };
+
+    final result = await _client.sdgbApi(
+      jsonEncode(data),
+      "GetUserMusicApi",
       userId,
     );
 

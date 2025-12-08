@@ -7,3 +7,7 @@
 - Remove default connection params
 - Add `RequestAdapter`
 - Support `.env`
+
+## 1.0.1
+
+- Add `getUserMusic`

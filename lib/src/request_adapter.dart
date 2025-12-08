@@ -49,4 +49,9 @@ class RequestAdapter {
       titleEndpoint: env['TITLE_ENDPOINT'] ?? '',
     );
   }
+
+  @override
+  String toString() {
+    return 'RequestAdapter(aesKey: $aesKey, aesIv: $aesIv, obfuscateParam: $obfuscateParam, keychipID: $keychipID, salt: $salt, openGameID: $openGameID, chimeEndpoint: $chimeEndpoint, titleEndpoint: $titleEndpoint)';
+  }
 }
